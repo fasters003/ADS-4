@@ -32,15 +32,21 @@ int binarySearchLast(int *arr, int left, int right, int target) {
   return result;
 }
 
+int countEqualInRange(int *arr, int start, int end, int value) {
+  int first = binarySearchFirst(arr, start, end, value);
+  if (first == -1) {
+    return 0;
+  }
+  int last = binarySearchLast(arr, first, end, value);
+  return last - first + 1;
+}
+
 int countPairs1(int *arr, int len, int value) {
   int count = 0;
-  for (int k = 0; k < 5; k++) {
-    count = 0;
-    for (int i = 0; i < len; i++) {
-      for (int j = i + 1; j < len; j++) {
-        if (arr[i] + arr[j] == value) {
-          count++;
-        }
+  for (int i = 0; i < len; i++) {
+    for (int j = i + 1; j < len; j++) {
+      if (arr[i] + arr[j] == value) {
+        count++;
       }
     }
   }
@@ -60,16 +66,8 @@ int countPairs2(int *arr, int len, int value) {
         count += n * (n - 1) / 2;
         break;
       }
-      int leftVal = arr[left];
-      int rightVal = arr[right];
-      int cntL = 1;
-      while (left + cntL < right && arr[left + cntL] == leftVal) {
-        cntL++;
-      }
-      int cntR = 1;
-      while (right - cntR > left && arr[right - cntR] == rightVal) {
-        cntR++;
-      }
+      int cntL = countEqualInRange(arr, left, right - 1, arr[left]);
+      int cntR = countEqualInRange(arr, left + cntL, right, arr[right]);
       count += cntL * cntR;
       left += cntL;
       right -= cntR;
@@ -87,11 +85,8 @@ int countPairs3(int *arr, int len, int value) {
 
   for (int i = 0; i < len; i++) {
     int target = value - arr[i];
-    int first = binarySearchFirst(arr, i + 1, len - 1, target);
-    if (first != -1) {
-      int last = binarySearchLast(arr, first, len - 1, target);
-      count += last - first + 1;
-    }
+    int cnt = countEqualInRange(arr, i + 1, len - 1, target);
+    count += cnt;
   }
   return count;
 }
