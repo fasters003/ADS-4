@@ -20,21 +20,21 @@ int countPairs2(int *arr, int len, int value) {
     int sum = arr[left] + arr[right];
     if (sum == value) {
       if (arr[left] == arr[right]) {
-        int k = right - left + 1;
-        count += (k * (k - 1)) / 2;
+        int n = right - left + 1;
+        count += n * (n - 1) / 2;
         break;
       }
-      int lcount = 1;
-      int rcount = 1;
-      while (left + lcount < right && arr[left] == arr[left + lcount]) {
-        lcount++;
+      int cntL = 1;
+      int cntR = 1;
+      while (left + cntL < right && arr[left] == arr[left + cntL]) {
+        cntL++;
       }
-      while (right - rcount > left && arr[right] == arr[right - rcount]) {
-        rcount++;
+      while (right - cntR > left && arr[right] == arr[right - cntR]) {
+        cntR++;
       }
-      count += lcount * rcount;
-      left += lcount;
-      right -= rcount;
+      count += cntL * cntR;
+      left += cntL;
+      right -= cntR;
     } else if (sum < value) {
       left++;
     } else {
@@ -48,22 +48,32 @@ int countPairs3(int *arr, int len, int value) {
   int count = 0;
   for (int i = 0; i < len; i++) {
     int target = value - arr[i];
-    int left = i + 1;
-    int right = len - 1;
-    while (left <= right) {
-      int mid = left + (right - left) / 2;
-      if (arr[mid] == target) {
-        int j = mid;
-        while (j < len && arr[j] == target) {
-          count++;
-          j++;
-        }
-        break;
-      } else if (arr[mid] < target) {
-        left = mid + 1;
+    int lo = i + 1;
+    int hi = len - 1;
+    int start = -1;
+    while (lo <= hi) {
+      int mid = lo + (hi - lo) / 2;
+      if (arr[mid] >= target) {
+        hi = mid - 1;
       } else {
-        right = mid - 1;
+        lo = mid + 1;
       }
+    }
+    start = lo;
+    if (start < len && start > i && arr[start] == target) {
+      lo = start;
+      hi = len - 1;
+      int end = start;
+      while (lo <= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] <= target) {
+          if (arr[mid] == target) end = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
+      }
+      count += end - start + 1;
     }
   }
   return count;
