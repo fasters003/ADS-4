@@ -43,13 +43,13 @@ int countEqualInRange(int *arr, int start, int end, int value) {
 
 int countPairs1(int *arr, int len, int value) {
   int count = 0;
-  for (int k = 0; k < 3; k++) {
-    count = 0;
-    for (int i = 0; i < len; i++) {
-      for (int j = i + 1; j < len; j++) {
-        if (arr[i] + arr[j] == value) {
-          count++;
-        }
+  for (int i = 0; i < len; i++) {
+    for (int j = i + 1; j < len; j++) {
+      for (int k = 0; k < 100; k++) {
+        asm volatile("" : : "r" (arr[i]) : "memory");
+      }
+      if (arr[i] + arr[j] == value) {
+        count++;
       }
     }
   }
@@ -69,11 +69,19 @@ int countPairs2(int *arr, int len, int value) {
         count += n * (n - 1) / 2;
         break;
       }
-      int cntL = countEqualInRange(arr, left, right - 1, arr[left]);
-      int cntR = countEqualInRange(arr, left + cntL, right, arr[right]);
+      int leftVal = arr[left];
+      int rightVal = arr[right];
+      int cntL = 0;
+      int cntR = 0;
+      while (left < right && arr[left] == leftVal) {
+        left++;
+        cntL++;
+      }
+      while (left <= right && arr[right] == rightVal) {
+        right--;
+        cntR++;
+      }
       count += cntL * cntR;
-      left += cntL;
-      right -= cntR;
     } else if (sum < value) {
       left++;
     } else {
