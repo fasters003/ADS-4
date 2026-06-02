@@ -25,17 +25,17 @@ int countPairs2(int *arr, int len, int value) {
         count += n * (n - 1) / 2;
         break;
       }
-      count++;
-      left++;
-      right--;
-      while (left < right && arr[left] == arr[left - 1]) {
-        left++;
-        count++;
+      int cntL = 1;
+      int cntR = 1;
+      while (left + cntL < right && arr[left] == arr[left + cntL]) {
+        cntL++;
       }
-      while (left < right && arr[right] == arr[right + 1]) {
-        right--;
-        count++;
+      while (right - cntR > left && arr[right] == arr[right - cntR]) {
+        cntR++;
       }
+      count += cntL * cntR;
+      left += cntL;
+      right -= cntR;
     } else if (sum < value) {
       left++;
     } else {
@@ -48,42 +48,37 @@ int countPairs2(int *arr, int len, int value) {
 int countPairs3(int *arr, int len, int value) {
   int count = 0;
 
-  for (int i = 0; i < len; i++) {
+  for (int i = 0; i < len - 1; i++) {
     int target = value - arr[i];
     int left = i + 1;
     int right = len - 1;
-    int first = -1;
 
     while (left <= right) {
       int mid = left + (right - left) / 2;
-      if (arr[mid] == target) {
-        first = mid;
+      if (arr[mid] >= target) {
         right = mid - 1;
-      } else if (arr[mid] < target) {
+      } else {
+        left = mid + 1;
+      }
+    }
+
+    int first = left;
+    left = i + 1;
+    right = len - 1;
+
+    while (left <= right) {
+      int mid = left + (right - left) / 2;
+      if (arr[mid] <= target) {
         left = mid + 1;
       } else {
         right = mid - 1;
       }
     }
 
-    if (first != -1) {
-      left = first;
-      right = len - 1;
-      int last = first;
+    int last = right;
 
-      while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (arr[mid] == target) {
-          last = mid;
-          left = mid + 1;
-        } else if (arr[mid] < target) {
-          left = mid + 1;
-        } else {
-          right = mid - 1;
-        }
-      }
-
-      count += (last - first + 1);
+    if (first <= last) {
+      count += last - first + 1;
     }
   }
   return count;
