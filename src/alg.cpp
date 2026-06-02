@@ -1,5 +1,3 @@
-// Copyright 2021 NNTU-CS
-
 int countPairs1(int *arr, int len, int value) {
   int count = 0;
   for (int i = 0; i < len; i++) {
@@ -25,18 +23,22 @@ int countPairs2(int *arr, int len, int value) {
         count += n * (n - 1) / 2;
         break;
       }
+      
       int leftVal = arr[L];
       int rightVal = arr[R];
       int leftCnt = 0;
       int rightCnt = 0;
-      do {
+      
+      while (L < R && arr[L] == leftVal) {
         L++;
         leftCnt++;
-      } while (L < R && arr[L] == leftVal);
-      do {
+      }
+      
+      while (L <= R && arr[R] == rightVal) {
         R--;
         rightCnt++;
-      } while (L <= R && arr[R] == rightVal);
+      }
+      
       count += leftCnt * rightCnt;
     } else if (sum < value) {
       L++;
@@ -49,29 +51,46 @@ int countPairs2(int *arr, int len, int value) {
 
 int countPairs3(int *arr, int len, int value) {
   int count = 0;
-  for (int i = 0; i < len; i++) {
+  
+  for (int i = 0; i < len - 1; i++) {
     int target = value - arr[i];
+    
     int left = i + 1;
     int right = len - 1;
+    int first = -1;
+    
     while (left <= right) {
       int mid = left + (right - left) / 2;
       if (arr[mid] == target) {
-        int first = mid;
-        while (first > i + 1 && arr[first - 1] == target) {
-          first--;
-        }
-        int last = mid;
-        while (last < len - 1 && arr[last + 1] == target) {
-          last++;
-        }
-        count += last - first + 1;
-        break;
+        first = mid;
+        right = mid - 1;
       } else if (arr[mid] < target) {
         left = mid + 1;
       } else {
         right = mid - 1;
       }
     }
+    
+    if (first == -1) continue;
+    
+    left = first;
+    right = len - 1;
+    int last = first;
+    
+    while (left <= right) {
+      int mid = left + (right - left) / 2;
+      if (arr[mid] == target) {
+        last = mid;
+        left = mid + 1;
+      } else if (arr[mid] < target) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+    
+    count += last - first + 1;
   }
+  
   return count;
 }
