@@ -36,8 +36,7 @@ int countPairs1(int *arr, int len, int value) {
   int count = 0;
   for (int i = 0; i < len; i++) {
     for (int j = i + 1; j < len; j++) {
-      volatile int sum = arr[i] + arr[j];
-      if (sum == value) {
+      if (arr[i] + arr[j] == value) {
         count++;
       }
     }
@@ -58,11 +57,19 @@ int countPairs2(int *arr, int len, int value) {
         count += n * (n - 1) / 2;
         break;
       }
-      int cntL = binarySearchLast(arr, left, right, arr[left]) - left + 1;
-      int cntR = right - binarySearchFirst(arr, left, right, arr[right]) + 1;
+      int leftVal = arr[left];
+      int rightVal = arr[right];
+      int cntL = 0;
+      int cntR = 0;
+      while (left < right && arr[left] == leftVal) {
+        left++;
+        cntL++;
+      }
+      while (left <= right && arr[right] == rightVal) {
+        right--;
+        cntR++;
+      }
       count += cntL * cntR;
-      left += cntL;
-      right -= cntR;
     } else if (sum < value) {
       left++;
     } else {
