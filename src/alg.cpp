@@ -1,43 +1,38 @@
 // Copyright 2021 NNTU-CS
 
-int binarySearchFirst(int *arr, int left, int right, int target) {
-  int result = -1;
-  while (left <= right) {
-    int mid = left + (right - left) / 2;
-    if (arr[mid] == target) {
-      result = mid;
-      right = mid - 1;
-    } else if (arr[mid] < target) {
-      left = mid + 1;
+int findFirst(int *arr, int begin, int end, int val) {
+  int ans = -1;
+  while (begin <= end) {
+    int mid = begin + (end - begin) / 2;
+    if (arr[mid] >= val) {
+      ans = mid;
+      end = mid - 1;
     } else {
-      right = mid - 1;
+      begin = mid + 1;
     }
   }
-  return result;
+  return ans;
 }
 
-int binarySearchLast(int *arr, int left, int right, int target) {
-  int result = -1;
-  while (left <= right) {
-    int mid = left + (right - left) / 2;
-    if (arr[mid] == target) {
-      result = mid;
-      left = mid + 1;
-    } else if (arr[mid] < target) {
-      left = mid + 1;
+int findLast(int *arr, int begin, int end, int val) {
+  int ans = -1;
+  while (begin <= end) {
+    int mid = begin + (end - begin) / 2;
+    if (arr[mid] <= val) {
+      ans = mid;
+      begin = mid + 1;
     } else {
-      right = mid - 1;
+      end = mid - 1;
     }
   }
-  return result;
+  return ans;
 }
 
-int countEqualInRange(int *arr, int start, int end, int value) {
-  int first = binarySearchFirst(arr, start, end, value);
-  if (first == -1) {
-    return 0;
-  }
-  int last = binarySearchLast(arr, first, end, value);
+int countInRange(int *arr, int L, int R, int target) {
+  if (L > R) return 0;
+  int first = findFirst(arr, L, R, target);
+  if (first == -1 || arr[first] != target) return 0;
+  int last = findLast(arr, first, R, target);
   return last - first + 1;
 }
 
@@ -45,9 +40,6 @@ int countPairs1(int *arr, int len, int value) {
   int count = 0;
   for (int i = 0; i < len; i++) {
     for (int j = i + 1; j < len; j++) {
-      for (int k = 0; k < 100; k++) {
-        asm volatile("" : : "r" (arr[i]) : "memory");
-      }
       if (arr[i] + arr[j] == value) {
         count++;
       }
@@ -58,34 +50,28 @@ int countPairs1(int *arr, int len, int value) {
 
 int countPairs2(int *arr, int len, int value) {
   int count = 0;
-  int left = 0;
-  int right = len - 1;
+  int L = 0;
+  int R = len - 1;
 
-  while (left < right) {
-    int sum = arr[left] + arr[right];
+  while (L < R) {
+    int sum = arr[L] + arr[R];
     if (sum == value) {
-      if (arr[left] == arr[right]) {
-        int n = right - left + 1;
+      int leftVal = arr[L];
+      int rightVal = arr[R];
+      if (leftVal == rightVal) {
+        int n = R - L + 1;
         count += n * (n - 1) / 2;
         break;
       }
-      int leftVal = arr[left];
-      int rightVal = arr[right];
-      int cntL = 0;
-      int cntR = 0;
-      while (left < right && arr[left] == leftVal) {
-        left++;
-        cntL++;
-      }
-      while (left <= right && arr[right] == rightVal) {
-        right--;
-        cntR++;
-      }
-      count += cntL * cntR;
+      int leftCnt = countInRange(arr, L, R - 1, leftVal);
+      int rightCnt = countInRange(arr, L + leftCnt, R, rightVal);
+      count += leftCnt * rightCnt;
+      L += leftCnt;
+      R -= rightCnt;
     } else if (sum < value) {
-      left++;
+      L++;
     } else {
-      right--;
+      R--;
     }
   }
   return count;
@@ -93,11 +79,9 @@ int countPairs2(int *arr, int len, int value) {
 
 int countPairs3(int *arr, int len, int value) {
   int count = 0;
-
   for (int i = 0; i < len; i++) {
-    int target = value - arr[i];
-    int cnt = countEqualInRange(arr, i + 1, len - 1, target);
-    count += cnt;
+    int need = value - arr[i];
+    count += countInRange(arr, i + 1, len - 1, need);
   }
   return count;
 }
