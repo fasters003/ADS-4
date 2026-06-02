@@ -1,41 +1,5 @@
 // Copyright 2021 NNTU-CS
 
-int findFirst(int *arr, int begin, int end, int val) {
-  int ans = -1;
-  while (begin <= end) {
-    int mid = begin + (end - begin) / 2;
-    if (arr[mid] >= val) {
-      ans = mid;
-      end = mid - 1;
-    } else {
-      begin = mid + 1;
-    }
-  }
-  return ans;
-}
-
-int findLast(int *arr, int begin, int end, int val) {
-  int ans = -1;
-  while (begin <= end) {
-    int mid = begin + (end - begin) / 2;
-    if (arr[mid] <= val) {
-      ans = mid;
-      begin = mid + 1;
-    } else {
-      end = mid - 1;
-    }
-  }
-  return ans;
-}
-
-int countInRange(int *arr, int L, int R, int target) {
-  if (L > R) return 0;
-  int first = findFirst(arr, L, R, target);
-  if (first == -1 || arr[first] != target) return 0;
-  int last = findLast(arr, first, R, target);
-  return last - first + 1;
-}
-
 int countPairs1(int *arr, int len, int value) {
   int count = 0;
   for (int i = 0; i < len; i++) {
@@ -56,23 +20,23 @@ int countPairs2(int *arr, int len, int value) {
   while (L < R) {
     int sum = arr[L] + arr[R];
     if (sum == value) {
-      int leftVal = arr[L];
-      int rightVal = arr[R];
-      if (leftVal == rightVal) {
+      if (arr[L] == arr[R]) {
         int n = R - L + 1;
         count += n * (n - 1) / 2;
         break;
       }
+      int leftVal = arr[L];
+      int rightVal = arr[R];
       int leftCnt = 0;
-      while (L < R && arr[L] == leftVal) {
-        leftCnt++;
-        L++;
-      }
       int rightCnt = 0;
-      while (L <= R && arr[R] == rightVal) {
-        rightCnt++;
+      do {
+        L++;
+        leftCnt++;
+      } while (L < R && arr[L] == leftVal);
+      do {
         R--;
-      }
+        rightCnt++;
+      } while (L <= R && arr[R] == rightVal);
       count += leftCnt * rightCnt;
     } else if (sum < value) {
       L++;
@@ -86,8 +50,28 @@ int countPairs2(int *arr, int len, int value) {
 int countPairs3(int *arr, int len, int value) {
   int count = 0;
   for (int i = 0; i < len; i++) {
-    int need = value - arr[i];
-    count += countInRange(arr, i + 1, len - 1, need);
+    int target = value - arr[i];
+    int left = i + 1;
+    int right = len - 1;
+    while (left <= right) {
+      int mid = left + (right - left) / 2;
+      if (arr[mid] == target) {
+        int first = mid;
+        while (first > i + 1 && arr[first - 1] == target) {
+          first--;
+        }
+        int last = mid;
+        while (last < len - 1 && arr[last + 1] == target) {
+          last++;
+        }
+        count += last - first + 1;
+        break;
+      } else if (arr[mid] < target) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
   }
   return count;
 }
