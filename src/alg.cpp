@@ -26,11 +26,12 @@ int countPairs2(int *arr, int len, int value) {
                 count += n * (n - 1) / 2;
                 break;
             } else {
-                int left_count = 1, right_count = 1;
+                int left_count = 1;
                 while (left + 1 < right && arr[left] == arr[left + 1]) {
                     left++;
                     left_count++;
                 }
+                int right_count = 1;
                 while (right - 1 > left && arr[right] == arr[right - 1]) {
                     right--;
                     right_count++;
