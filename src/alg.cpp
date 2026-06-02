@@ -54,9 +54,13 @@ int countPairs3(int *arr, int len, int value) {
       int mid = left + (right - left) / 2;
       if (arr[mid] == target) {
         int l = mid;
+        while (l > i && arr[l - 1] == target) {
+          l--;
+        }
         int r = mid;
-        while (l > i && arr[l - 1] == target) l--;
-        while (r < len - 1 && arr[r + 1] == target) r++;
+        while (r < len - 1 && arr[r + 1] == target) {
+          r++;
+        }
         count += r - l + 1;
         break;
       } else if (arr[mid] < target) {
