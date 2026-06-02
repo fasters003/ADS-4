@@ -58,16 +58,8 @@ int countPairs2(int *arr, int len, int value) {
         count += n * (n - 1) / 2;
         break;
       }
-      int cntL = 1;
-      int cntR = 1;
-      int leftVal = arr[left];
-      int rightVal = arr[right];
-      while (arr[left + cntL] == leftVal) {
-        cntL++;
-      }
-      while (arr[right - cntR] == rightVal) {
-        cntR++;
-      }
+      int cntL = binarySearchLast(arr, left, right, arr[left]) - left + 1;
+      int cntR = right - binarySearchFirst(arr, left, right, arr[right]) + 1;
       count += cntL * cntR;
       left += cntL;
       right -= cntR;
