@@ -63,11 +63,17 @@ int countPairs2(int *arr, int len, int value) {
         count += n * (n - 1) / 2;
         break;
       }
-      int leftCnt = countInRange(arr, L, R - 1, leftVal);
-      int rightCnt = countInRange(arr, L + leftCnt, R, rightVal);
+      int leftCnt = 0;
+      while (L < R && arr[L] == leftVal) {
+        leftCnt++;
+        L++;
+      }
+      int rightCnt = 0;
+      while (L <= R && arr[R] == rightVal) {
+        rightCnt++;
+        R--;
+      }
       count += leftCnt * rightCnt;
-      L += leftCnt;
-      R -= rightCnt;
     } else if (sum < value) {
       L++;
     } else {
